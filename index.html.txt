@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Honeycomb FRC Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1 class="dashboard-title">
+                    <i class="fas fa-honey-pot"></i>
+                    Honeycomb Devils Invent 2025
+                </h1>
+            </div>
+            <div class="header-right">
+                <div class="connection-status">
+                    <i class="fas fa-circle status-indicator connected"></i>
+                    <span>Connected</span>
+                </div>
+                <div class="battery-level">
+                    <i class="fas fa-bee"></i>
+                    <span>12.4V</span>
+                </div>
+                <button class="esp32-btn" id="esp32ConnectBtn">
+                    <i class="fas fa-wifi"></i>
+                    <span>Connect ESP32</span>
+                </button>
+                <button class="settings-btn">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Grid -->
+        <main class="dashboard-main">
+            <!-- Left Panel - Telemetry Charts -->
+            <aside class="telemetry-panel">
+                <div class="panel-header">
+                    <h3>Live Telemetry</h3>
+                </div>
+                
+                <!-- Speed Chart -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h4>Speed Over Time</h4>
+                        <div class="chart-controls">
+                            <button class="chart-btn" id="speedPauseBtn">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                            <button class="chart-btn" id="speedResetBtn">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <canvas id="speedChart" width="400" height="200"></canvas>
+                </div>
+
+                <!-- Temperature Chart -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h4>Temperature Monitoring</h4>
+                        <div class="chart-controls">
+                            <button class="chart-btn" id="tempPauseBtn">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                            <button class="chart-btn" id="tempResetBtn">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <canvas id="temperatureChart" width="400" height="200"></canvas>
+                </div>
+
+                <!-- Battery Level Chart -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h4>Battery Level</h4>
+                        <div class="chart-controls">
+                            <button class="chart-btn" id="batteryPauseBtn">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                            <button class="chart-btn" id="batteryResetBtn">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <canvas id="batteryChart" width="400" height="200"></canvas>
+                </div>
+            </aside>
+
+            <!-- Center Panel - Main Content -->
+            <section class="main-content">
+                <!-- Camera Feed -->
+                <div class="widget camera-widget" data-widget="camera">
+                    <div class="widget-header">
+                        <h3>Camera Feed</h3>
+                        <div class="widget-controls">
+                            <button class="widget-btn" title="Fullscreen">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                            <button class="widget-btn" title="Settings">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="camera-container">
+                        <div class="camera-placeholder">
+                            <i class="fas fa-video"></i>
+                            <p>Camera Feed</p>
+                        </div>
+                        <div class="camera-overlay">
+                            <div class="crosshair"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Telemetry Data -->
+                <div class="widget telemetry-widget" data-widget="telemetry">
+                    <div class="widget-header">
+                        <h3>Robot Telemetry</h3>
+                        <div class="widget-controls">
+                            <button class="widget-btn" title="Refresh">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="telemetry-grid">
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Speed</span>
+                            <span class="telemetry-value" id="speedValue">0.0 m/s</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Distance</span>
+                            <span class="telemetry-value" id="distanceValue">0.0 m</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Angle</span>
+                            <span class="telemetry-value" id="angleValue">0°</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Temperature</span>
+                            <span class="telemetry-value" id="tempValue">25°C</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel - Status & Logs -->
+            <aside class="status-panel">
+                <div class="panel-header">
+                    <h3>System Status</h3>
+                </div>
+
+                <!-- System Health -->
+                <div class="status-group">
+                    <h4>System Health</h4>
+                    <div class="health-indicators">
+                        <div class="health-item">
+                            <i class="fas fa-honeycomb"></i>
+                            <span>CPU</span>
+                            <div class="health-bar">
+                                <div class="health-fill" style="width: 45%"></div>
+                            </div>
+                            <span class="health-value">45%</span>
+                        </div>
+                        <div class="health-item">
+                            <i class="fas fa-hive"></i>
+                            <span>RAM</span>
+                            <div class="health-bar">
+                                <div class="health-fill" style="width: 32%"></div>
+                            </div>
+                            <span class="health-value">32%</span>
+                        </div>
+                        <div class="health-item">
+                            <i class="fas fa-fire-flame-curved"></i>
+                            <span>Temp</span>
+                            <div class="health-bar">
+                                <div class="health-fill" style="width: 60%"></div>
+                            </div>
+                            <span class="health-value">60°C</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Log -->
+                <div class="status-group">
+                    <h4>Event Log</h4>
+                    <div class="event-log">
+                        <div class="log-entry info">
+                            <span class="log-time">14:32:15</span>
+                            <span class="log-message">Robot initialized successfully</span>
+                        </div>
+                        <div class="log-entry warning">
+                            <span class="log-time">14:32:10</span>
+                            <span class="log-message">Low battery warning</span>
+                        </div>
+                        <div class="log-entry success">
+                            <span class="log-time">14:31:45</span>
+                            <span class="log-message">Connection established</span>
+                        </div>
+                        <div class="log-entry error">
+                            <span class="log-time">14:31:30</span>
+                            <span class="log-message">Camera initialization failed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="status-group">
+                    <h4>Quick Actions</h4>
+                    <div class="quick-actions">
+                        <button class="action-btn emergency">
+                            <i class="fas fa-stop"></i>
+                            Emergency Stop
+                        </button>
+                        <button class="action-btn restart">
+                            <i class="fas fa-redo"></i>
+                            Restart Robot
+                        </button>
+                        <button class="action-btn calibrate">
+                            <i class="fas fa-honey-pot"></i>
+                            Calibrate
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Bottom Status Bar -->
+        <footer class="status-bar">
+            <div class="status-left">
+            </div>
+            <div class="status-center">
+            </div>
+            <div class="status-right">
+                <span class="timestamp" id="currentTime"></span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
