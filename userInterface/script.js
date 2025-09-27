@@ -11,13 +11,29 @@ class HoneycombDashboard {
         };
         this.charts = {};
         this.chartData = {
-            speed: { labels: [], datasets: [] },
-            temperature: { labels: [], datasets: [] },
-            battery: { labels: [], datasets: [] }
+            speed: { 
+                labels: [], 
+                datasets: [] 
+            },
+            temperature: { 
+                labels: [], 
+                datasets: [] 
+            },
+            battery: { 
+                labels: [], 
+                datasets: [] 
+            },
+            dataComparison: { 
+                labels: [], 
+                measuredData: [], 
+                expectedData: [] 
+            }
         };
         this.maxDataPoints = 50;
         this.esp32Handler = null;
         this.esp32Connected = false;
+        this.realTimeData = null; // Store real-time data from ESP32
+        this.websocket = null;
         this.init();
     }
 
@@ -25,10 +41,13 @@ class HoneycombDashboard {
         this.loadSettings();
         this.setupEventListeners();
         this.initializeCharts();
+        this.initializeDataComparisonChart();
         this.startDataSimulation();
         this.updateClock();
         this.setupWidgetControls();
         this.setupChartControls();
+        this.startPropellerAnimation();
+        this.connectToESP32();
     }
 
     loadSettings() {
@@ -208,6 +227,248 @@ class HoneycombDashboard {
         });
     }
 
+    initializeDataComparisonChart() {
+        // Data Comparison Chart for measured vs expected values
+        this.charts.dataComparison = new Chart(document.getElementById('dataComparisonChart'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Measured Values',
+                    data: [],
+                    borderColor: '#FFD700',
+                    backgroundColor: 'rgba(255, 215, 0, 0.2)',
+                    borderWidth: 3,
+                    fill: false,
+                    tension: 0.4,
+                    pointBackgroundColor: '#FFD700',
+                    pointBorderColor: '#FFA500',
+                    pointBorderWidth: 2,
+                    pointRadius: 4
+                }, {
+                    label: 'Expected Values',
+                    data: [],
+                    borderColor: '#00d4ff',
+                    backgroundColor: 'rgba(0, 212, 255, 0.2)',
+                    borderWidth: 3,
+                    fill: false,
+                    tension: 0.4,
+                    pointBackgroundColor: '#00d4ff',
+                    pointBorderColor: '#0099cc',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    borderDash: [5, 5]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#2F1B14',
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#8B4513',
+                            font: {
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255, 140, 0, 0.2)'
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: '#8B4513',
+                            font: {
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255, 140, 0, 0.2)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Initialize with some sample data
+        this.generateSampleComparisonData();
+    }
+
+    generateSampleComparisonData() {
+        const timeLabels = [];
+        const measuredData = [];
+        const expectedData = [];
+        
+        for (let i = 0; i < 20; i++) {
+            const time = new Date(Date.now() - (20 - i) * 1000);
+            timeLabels.push(time.toLocaleTimeString());
+            
+            // Generate realistic measured values with some variance
+            const baseValue = Math.sin(i * 0.3) * 50 + 100;
+            measuredData.push(baseValue + (Math.random() - 0.5) * 10);
+            expectedData.push(baseValue);
+        }
+        
+        this.charts.dataComparison.data.labels = timeLabels;
+        this.charts.dataComparison.data.datasets[0].data = measuredData;
+        this.charts.dataComparison.data.datasets[1].data = expectedData;
+        this.charts.dataComparison.update();
+    }
+
+    //This will be where we update the data comparison chart
+    updateDataComparisonChart() {
+        const now = new Date();
+        const timeLabel = now.toLocaleTimeString();
+        
+        // Use real robot data if available, otherwise generate simulated data
+        let measuredValue, expectedValue;
+        
+        if (this.realTimeData && this.realTimeData.speed !== undefined) {
+            // Use real ESP32 data
+            measuredValue = this.realTimeData.speed * 10 + 50; // Scale for chart display
+            expectedValue = measuredValue + (Math.random() - 0.5) * 5; // Slight variance for expected
+        } else {
+            // Generate simulated data
+            const baseValue = Math.sin(Date.now() * 0.001) * 50 + 100;
+            measuredValue = baseValue + (Math.random() - 0.5) * 15;
+            expectedValue = baseValue;
+        }
+        
+        // Add new data point
+        this.charts.dataComparison.data.labels.push(timeLabel);
+        this.charts.dataComparison.data.datasets[0].data.push(measuredValue);
+        this.charts.dataComparison.data.datasets[1].data.push(expectedValue);
+        
+        // Keep only the last maxDataPoints
+        if (this.charts.dataComparison.data.labels.length > this.maxDataPoints) {
+            this.charts.dataComparison.data.labels.shift();
+            this.charts.dataComparison.data.datasets[0].data.shift();
+            this.charts.dataComparison.data.datasets[1].data.shift();
+        }
+        
+        // Update the chart
+        this.charts.dataComparison.update('none');
+    }
+
+    //Replace with the actual propeellow design soon
+    startPropellerAnimation() {
+        // Update propeller values periodically
+        setInterval(() => {
+            this.updatePropellerValues();
+        }, 2000);
+    }
+
+    
+    updatePropellerValues() {
+        // Use real ESP32 data if available, otherwise simulate
+        let rpm, thrust, status;
+        
+        if (this.realTimeData && this.realTimeData.propeller_rpm !== undefined) {
+            // Use real ESP32 data
+            rpm = this.realTimeData.propeller_rpm;
+            thrust = this.realTimeData.propeller_thrust;
+            status = this.realTimeData.status;
+        } else {
+            // Simulate varying propeller data
+            rpm = 1000 + Math.random() * 500;
+            thrust = 70 + Math.random() * 30;
+            const statuses = ['Active', 'Optimal', 'High Load', 'Low Load'];
+            status = statuses[Math.floor(Math.random() * statuses.length)];
+        }
+        
+        document.getElementById('propellerRPM').textContent = Math.round(rpm);
+        document.getElementById('propellerThrust').textContent = Math.round(thrust) + '%';
+        document.getElementById('propellerStatus').textContent = status;
+        
+        // Adjust animation speed based on RPM
+        const propellerSvg = document.querySelector('.propeller-svg');
+        const animationDuration = Math.max(0.5, 3 - (rpm - 1000) / 1000);
+        propellerSvg.style.animationDuration = animationDuration + 's';
+    }
+
+    // Connect to ESP32 WebSocket
+    connectToESP32() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.hostname}:81`;
+        
+        console.log('Attempting to connect to ESP32 WebSocket:', wsUrl);
+        
+        this.websocket = new WebSocket(wsUrl);
+        
+        this.websocket.onopen = (event) => {
+            console.log('Connected to ESP32 WebSocket');
+            this.esp32Connected = true;
+            this.updateESP32ButtonStatus(true);
+            this.addLogEntry('Connected to ESP32', 'success');
+        };
+        
+        this.websocket.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                this.realTimeData = data;
+                this.processRealTimeData(data);
+            } catch (error) {
+                console.error('Error parsing ESP32 data:', error);
+            }
+        };
+        
+        this.websocket.onclose = (event) => {
+            console.log('ESP32 WebSocket disconnected');
+            this.esp32Connected = false;
+            this.realTimeData = null;
+            this.updateESP32ButtonStatus(false);
+            this.addLogEntry('Disconnected from ESP32', 'warning');
+            
+            // Attempt to reconnect after 3 seconds
+            setTimeout(() => {
+                if (!this.esp32Connected) {
+                    this.connectToESP32();
+                }
+            }, 3000);
+        };
+        
+        this.websocket.onerror = (error) => {
+            console.error('ESP32 WebSocket error:', error);
+            this.addLogEntry('ESP32 connection error', 'error');
+        };
+    }
+
+    // Process real-time data from ESP32
+    processRealTimeData(data) {
+        // Update robot data with ESP32 values
+        this.robotData.speed = data.speed || this.robotData.speed;
+        this.robotData.distance = data.distance || this.robotData.distance;
+        this.robotData.angle = data.angle || this.robotData.angle;
+        this.robotData.temperature = data.temperature || this.robotData.temperature;
+        this.robotData.battery = data.battery || this.robotData.battery;
+        
+        // Update displays
+        this.updateTelemetryDisplay();
+        this.updateBatteryDisplay();
+        this.updateCharts();
+    }
+
+    // Send command to ESP32
+    sendESP32Command(command) {
+        if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+            const message = JSON.stringify({ command: command });
+            this.websocket.send(message);
+            console.log('Sent command to ESP32:', command);
+        } else {
+            console.warn('ESP32 not connected, cannot send command');
+        }
+    }
+
     setupChartControls() {
         // Chart control buttons
         const chartControls = {
@@ -235,15 +496,21 @@ class HoneycombDashboard {
     }
 
     setupWidgetControls() {
-        // Camera fullscreen
-        document.querySelector('.camera-widget .widget-btn[title="Fullscreen"]').addEventListener('click', () => {
-            this.toggleCameraFullscreen();
-        });
+        // Chart fullscreen
+        const chartFullscreenBtn = document.querySelector('.chart-widget .widget-btn[title="Fullscreen"]');
+        if (chartFullscreenBtn) {
+            chartFullscreenBtn.addEventListener('click', () => {
+                this.toggleChartFullscreen();
+            });
+        }
 
-        // Telemetry refresh
-        document.querySelector('.telemetry-widget .widget-btn[title="Refresh"]').addEventListener('click', () => {
-            this.refreshTelemetry();
-        });
+        // Propeller refresh
+        const propellerRefreshBtn = document.querySelector('.propeller-widget .widget-btn[title="Refresh"]');
+        if (propellerRefreshBtn) {
+            propellerRefreshBtn.addEventListener('click', () => {
+                this.refreshPropeller();
+            });
+        }
     }
 
     updateCharts() {
@@ -321,15 +588,37 @@ class HoneycombDashboard {
                 this.updateTelemetryDisplay();
                 this.updateBatteryDisplay();
                 this.updateCharts();
+                this.updateDataComparisonChart();
             }
         }, 1000); // Update every second for better chart visualization
     }
 
     updateTelemetryDisplay() {
-        document.getElementById('speedValue').textContent = `${this.robotData.speed.toFixed(1)} m/s`;
-        document.getElementById('distanceValue').textContent = `${this.robotData.distance.toFixed(1)} m`;
-        document.getElementById('angleValue').textContent = `${Math.round(this.robotData.angle)}°`;
-        document.getElementById('tempValue').textContent = `${Math.round(this.robotData.temperature)}°C`;
+        // Update center telemetry (if it exists)
+        const speedValue = document.getElementById('speedValue');
+        const distanceValue = document.getElementById('distanceValue');
+        const angleValue = document.getElementById('angleValue');
+        const tempValue = document.getElementById('tempValue');
+        
+        if (speedValue) speedValue.textContent = `${this.robotData.speed.toFixed(1)} m/s`;
+        if (distanceValue) distanceValue.textContent = `${this.robotData.distance.toFixed(1)} m`;
+        if (angleValue) angleValue.textContent = `${Math.round(this.robotData.angle)}°`;
+        if (tempValue) tempValue.textContent = `${Math.round(this.robotData.temperature)}°C`;
+        
+        // Update left panel telemetry
+        document.getElementById('speedValueLeft').textContent = `${this.robotData.speed.toFixed(1)} m/s`;
+        document.getElementById('distanceValueLeft').textContent = `${this.robotData.distance.toFixed(1)} m`;
+        document.getElementById('angleValueLeft').textContent = `${Math.round(this.robotData.angle)}°`;
+        document.getElementById('tempValueLeft').textContent = `${Math.round(this.robotData.temperature)}°C`;
+        document.getElementById('batteryValueLeft').textContent = `${this.robotData.battery.toFixed(1)}V`;
+        
+        // Update status based on robot conditions
+        let status = 'Active';
+        if (this.robotData.temperature > 70) status = 'High Temp';
+        else if (this.robotData.battery < 11.0) status = 'Low Battery';
+        else if (!this.isConnected) status = 'Disconnected';
+        
+        document.getElementById('statusValueLeft').textContent = status;
     }
 
     updateBatteryDisplay() {
@@ -361,49 +650,18 @@ class HoneycombDashboard {
     }
 
     emergencyStop() {
-        this.isConnected = false;
-        this.updateConnectionStatus(false);
-        
+        this.sendESP32Command('emergency_stop');
         this.addLogEntry('Emergency stop activated', 'error');
-        
-        // Reconnect after 3 seconds
-        setTimeout(() => {
-            this.isConnected = true;
-            this.updateConnectionStatus(true);
-            this.addLogEntry('System reconnected', 'success');
-        }, 3000);
     }
 
     restartRobot() {
+        this.sendESP32Command('restart');
         this.addLogEntry('Restarting robot...', 'warning');
-        
-        setTimeout(() => {
-            this.robotData = {
-                speed: 0,
-                distance: 0,
-                angle: 0,
-                temperature: 25,
-                battery: 12.4
-            };
-            this.updateTelemetryDisplay();
-            this.addLogEntry('Robot restarted successfully', 'success');
-        }, 2000);
     }
 
     calibrateRobot() {
+        this.sendESP32Command('calibrate');
         this.addLogEntry('Starting calibration...', 'info');
-        
-        // Simulate calibration process
-        let progress = 0;
-        const calibrationInterval = setInterval(() => {
-            progress += 10;
-            this.addLogEntry(`Calibration progress: ${progress}%`, 'info');
-            
-            if (progress >= 100) {
-                clearInterval(calibrationInterval);
-                this.addLogEntry('Calibration completed', 'success');
-            }
-        }, 500);
     }
 
     updateConnectionStatus(connected) {
@@ -440,16 +698,21 @@ class HoneycombDashboard {
         }
     }
 
-    toggleCameraFullscreen() {
-        const cameraWidget = document.querySelector('.camera-widget');
+    toggleChartFullscreen() {
+        const chartWidget = document.querySelector('.chart-widget');
         
         if (!document.fullscreenElement) {
-            cameraWidget.requestFullscreen().catch(err => {
+            chartWidget.requestFullscreen().catch(err => {
                 console.log('Error attempting to enable fullscreen:', err);
             });
         } else {
             document.exitFullscreen();
         }
+    }
+
+    refreshPropeller() {
+        this.updatePropellerValues();
+        this.addLogEntry('Propeller data refreshed', 'info');
     }
 
     refreshTelemetry() {
@@ -671,16 +934,25 @@ class HoneycombDashboard {
 
     handleWidgetControl(button) {
         const title = button.getAttribute('title');
+        const widget = button.closest('.widget');
         
         switch (title) {
             case 'Fullscreen':
-                this.toggleCameraFullscreen();
+                if (widget.classList.contains('chart-widget')) {
+                    this.toggleChartFullscreen();
+                } else {
+                    this.toggleCameraFullscreen();
+                }
                 break;
             case 'Settings':
                 this.openSettings();
                 break;
             case 'Refresh':
-                this.refreshTelemetry();
+                if (widget.classList.contains('propeller-widget')) {
+                    this.refreshPropeller();
+                } else {
+                    this.refreshTelemetry();
+                }
                 break;
         }
     }

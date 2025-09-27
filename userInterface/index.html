@@ -39,13 +39,41 @@
 
         <!-- Main Dashboard Grid -->
         <main class="dashboard-main">
-            <!-- Left Panel - Telemetry Charts -->
+            <!-- Left Panel - Robot Telemetry -->
             <aside class="telemetry-panel">
                 <div class="panel-header">
-                    <h3>Live Telemetry</h3>
+                    <h3>Robot Telemetry</h3>
                 </div>
                 
-                <!-- Speed Chart -->
+                <!-- Telemetry Data Grid -->
+                <div class="telemetry-grid-left">
+                    <div class="telemetry-item-left">
+                        <span class="telemetry-label-left">Speed</span>
+                        <span class="telemetry-value-left" id="speedValueLeft">0.0 m/s</span>
+                    </div>
+                    <div class="telemetry-item-left">
+                        <span class="telemetry-label-left">Distance</span>
+                        <span class="telemetry-value-left" id="distanceValueLeft">0.0 m</span>
+                    </div>
+                    <div class="telemetry-item-left">
+                        <span class="telemetry-label-left">Angle</span>
+                        <span class="telemetry-value-left" id="angleValueLeft">0°</span>
+                    </div>
+                    <div class="telemetry-item-left">
+                        <span class="telemetry-label-left">Temperature</span>
+                        <span class="telemetry-value-left" id="tempValueLeft">25°C</span>
+                    </div>
+                    <div class="telemetry-item-left">
+                        <span class="telemetry-label-left">Battery</span>
+                        <span class="telemetry-value-left" id="batteryValueLeft">12.4V</span>
+                    </div>
+                    <div class="telemetry-item-left">
+                        <span class="telemetry-label-left">Status</span>
+                        <span class="telemetry-value-left" id="statusValueLeft">Active</span>
+                    </div>
+                </div>
+
+                <!-- Additional Telemetry Charts -->
                 <div class="chart-container">
                     <div class="chart-header">
                         <h4>Speed Over Time</h4>
@@ -58,7 +86,7 @@
                             </button>
                         </div>
                     </div>
-                    <canvas id="speedChart" width="400" height="200"></canvas>
+                    <canvas id="speedChart" width="400" height="150"></canvas>
                 </div>
 
                 <!-- Temperature Chart -->
@@ -74,32 +102,16 @@
                             </button>
                         </div>
                     </div>
-                    <canvas id="temperatureChart" width="400" height="200"></canvas>
-                </div>
-
-                <!-- Battery Level Chart -->
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <h4>Battery Level</h4>
-                        <div class="chart-controls">
-                            <button class="chart-btn" id="batteryPauseBtn">
-                                <i class="fas fa-pause"></i>
-                            </button>
-                            <button class="chart-btn" id="batteryResetBtn">
-                                <i class="fas fa-redo"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <canvas id="batteryChart" width="400" height="200"></canvas>
+                    <canvas id="temperatureChart" width="400" height="150"></canvas>
                 </div>
             </aside>
 
             <!-- Center Panel - Main Content -->
             <section class="main-content">
-                <!-- Camera Feed -->
-                <div class="widget camera-widget" data-widget="camera">
+                <!-- Data Comparison Chart -->
+                <div class="widget chart-widget" data-widget="chart">
                     <div class="widget-header">
-                        <h3>Camera Feed</h3>
+                        <h3>Measured vs Expected Data</h3>
                         <div class="widget-controls">
                             <button class="widget-btn" title="Fullscreen">
                                 <i class="fas fa-expand"></i>
@@ -109,43 +121,57 @@
                             </button>
                         </div>
                     </div>
-                    <div class="camera-container">
-                        <div class="camera-placeholder">
-                            <i class="fas fa-video"></i>
-                            <p>Camera Feed</p>
-                        </div>
-                        <div class="camera-overlay">
-                            <div class="crosshair"></div>
-                        </div>
+                    <div class="chart-container-large">
+                        <canvas id="dataComparisonChart" width="600" height="400"></canvas>
                     </div>
                 </div>
 
-                <!-- Telemetry Data -->
-                <div class="widget telemetry-widget" data-widget="telemetry">
+                <!-- Propeller Display -->
+                <div class="widget propeller-widget" data-widget="propeller">
                     <div class="widget-header">
-                        <h3>Robot Telemetry</h3>
+                        <h3>Propeller Status</h3>
                         <div class="widget-controls">
                             <button class="widget-btn" title="Refresh">
                                 <i class="fas fa-sync-alt"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="telemetry-grid">
-                        <div class="telemetry-item">
-                            <span class="telemetry-label">Speed</span>
-                            <span class="telemetry-value" id="speedValue">0.0 m/s</span>
-                        </div>
-                        <div class="telemetry-item">
-                            <span class="telemetry-label">Distance</span>
-                            <span class="telemetry-value" id="distanceValue">0.0 m</span>
-                        </div>
-                        <div class="telemetry-item">
-                            <span class="telemetry-label">Angle</span>
-                            <span class="telemetry-value" id="angleValue">0°</span>
-                        </div>
-                        <div class="telemetry-item">
-                            <span class="telemetry-label">Temperature</span>
-                            <span class="telemetry-value" id="tempValue">25°C</span>
+                    <div class="propeller-container">
+                        <svg class="propeller-svg" viewBox="0 0 300 300">
+                            <!-- Propeller Hub -->
+                            <circle cx="150" cy="150" r="20" fill="#FFD700" stroke="#FFA500" stroke-width="3"/>
+                            
+                            <!-- Propeller Blades -->
+                            <g class="propeller-blades">
+                                <!-- Blade 1 -->
+                                <ellipse cx="150" cy="80" rx="8" ry="60" fill="#FF8C00" stroke="#FFA500" stroke-width="2" transform="rotate(0 150 150)"/>
+                                <!-- Blade 2 -->
+                                <ellipse cx="150" cy="80" rx="8" ry="60" fill="#FF8C00" stroke="#FFA500" stroke-width="2" transform="rotate(120 150 150)"/>
+                                <!-- Blade 3 -->
+                                <ellipse cx="150" cy="80" rx="8" ry="60" fill="#FF8C00" stroke="#FFA500" stroke-width="2" transform="rotate(240 150 150)"/>
+                            </g>
+                            
+                            <!-- Center Ring -->
+                            <circle cx="150" cy="150" r="15" fill="none" stroke="#FFD700" stroke-width="2"/>
+                            
+                            <!-- Status Indicators -->
+                            <circle cx="150" cy="150" r="3" fill="#FFFF00"/>
+                        </svg>
+                        
+                        <!-- Propeller Info -->
+                        <div class="propeller-info">
+                            <div class="propeller-stat">
+                                <span class="propeller-label">RPM</span>
+                                <span class="propeller-value" id="propellerRPM">1250</span>
+                            </div>
+                            <div class="propeller-stat">
+                                <span class="propeller-label">Thrust</span>
+                                <span class="propeller-value" id="propellerThrust">85%</span>
+                            </div>
+                            <div class="propeller-stat">
+                                <span class="propeller-label">Status</span>
+                                <span class="propeller-value" id="propellerStatus">Active</span>
+                            </div>
                         </div>
                     </div>
                 </div>
