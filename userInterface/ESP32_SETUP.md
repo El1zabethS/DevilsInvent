@@ -1,7 +1,5 @@
 # ESP32 Setup Guide - Honeycomb Devils Invent 2025
 
-## 🚀 Quick Start
-
 ### 1. Install Required Libraries
 In Arduino IDE, install these libraries via Library Manager:
 - **ArduinoJson** by Benoit Blanchon (v6.x)
@@ -175,11 +173,7 @@ Watch for these messages:
    - Battery power management
    - Fail-safe mechanisms
 
-## 📞 Support
-
 - **Serial Monitor**: Always check for error messages
 - **Network Tools**: Use `ping 192.168.1.XXX` to test connectivity
 - **Browser DevTools**: F12 → Console for JavaScript errors
 - **ESP32 Documentation**: https://docs.espressif.com/
-
-Happy coding! 🚀🤖

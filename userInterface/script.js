@@ -54,6 +54,7 @@ class HoneycombDashboard {
         this.setupChartControls();
         this.startPropellerAnimation();
         this.connectToESP32();
+        this.setupBottomRightButton();
     }
 
     //Loading the settings from the localStorage
@@ -293,6 +294,7 @@ class HoneycombDashboard {
             timeLabels.push(time.toLocaleTimeString());
             
             // Generate random realistic measured values with some variance
+            // "Near perfect" harmonic oscillation modeled with a sine wave with some variance
             const baseValue = Math.sin(i * 0.3) * 50 + 100;
             measuredData.push(baseValue + (Math.random() - 0.5) * 10);
             expectedData.push(baseValue);
@@ -320,8 +322,17 @@ class HoneycombDashboard {
         } else {
             // Generate simulated data
             const baseValue = Math.sin(Date.now() * 0.001) * 50 + 100;
-            measuredValue = baseValue + (Math.random() - 0.5) * 15;
-            expectedValue = baseValue;
+
+            // Show discrepancy from ideal conditions and highlight faulty propeller conditions through spikes in oscillation (unpredictability in amplitude)
+            measuredValue = Math.sin(Date.now() * 0.001) * 75 + 100;
+
+            // "Near perfect" harmonic oscillation modeled with a sine wave with some variance
+            expectedValue = baseValue + (Math.random() - 0.5) * 15;
+
+            if (measuredValue > expectedValue) {
+                //Variance in the measured value when greater than expected value
+                expectedValue = measuredValue - (Math.random() - 0.5) * 7;
+            }
         }
         
         // Add new data point
@@ -1021,7 +1032,7 @@ class HoneycombDashboard {
                 } 
                 else 
                 {
-                    this.toggleCameraFullscreen();
+                this.toggleCameraFullscreen();
                 }
                 break;
             
@@ -1035,10 +1046,37 @@ class HoneycombDashboard {
                 if (widget.classList.contains('propeller-widget')) {
                     this.refreshPropeller();
                 } else {
-                    this.refreshTelemetry();
+                this.refreshTelemetry();
                 }
                 break;
         }
+    }
+
+    // Setup Bottom Right Button
+    setupBottomRightButton() {
+        const bottomRightBtn = document.getElementById('bottomRightBtn');
+        const outputTextarea = document.getElementById('outputTextarea');
+        
+        if (!bottomRightBtn || !outputTextarea) return;
+
+        bottomRightBtn.addEventListener('click', () => {
+            const timestamp = new Date().toLocaleTimeString();
+            const message = `[${timestamp}] 🤖 AI Assistant activated - System status updated\n`;
+            
+            // Add message to output textarea
+            outputTextarea.value += message;
+            
+            // Auto-scroll to bottom
+            outputTextarea.scrollTop = outputTextarea.scrollHeight;
+            
+            // Add some visual feedback
+            bottomRightBtn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                bottomRightBtn.style.transform = '';
+            }, 150);
+            
+            console.log('AI Assistant button clicked');
+        });
     }
 }
 

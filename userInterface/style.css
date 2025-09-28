@@ -7,8 +7,8 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #FFD580 0%, #fffdaf 50%, #FFD580 100%);
-    color: #000000;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #FFE4B5 50%, #F0E68C 75%, #DAA520 100%);
+    color: #2F1B14;
     overflow-x: hidden;
     min-height: 100vh;
     position: relative;
@@ -23,9 +23,9 @@ body::before {
     right: 0;
     bottom: 0;
     background-image: 
-        radial-gradient(circle at 20% 20%, rgba(255, 213, 128, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(255, 253, 175, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 40% 60%, rgba(255, 213, 128, 0.2) 0%, transparent 50%);
+        radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 165, 0, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 40% 60%, rgba(128, 0, 128, 0.1) 0%, transparent 50%);
     pointer-events: none;
     z-index: -1;
 }
@@ -35,7 +35,7 @@ body::before {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: rgba(255, 213, 128, 0.2);
+    background: rgba(255, 215, 0, 0.1);
     backdrop-filter: blur(10px);
     position: relative;
     height: auto;
@@ -49,8 +49,8 @@ body::before {
     right: 0;
     bottom: 0;
     background-image: 
-        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 85,25 85,75 50,95 15,75 15,25" fill="none" stroke="rgba(255,213,128,0.3)" stroke-width="0.5"/></svg>'),
-        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 85,25 85,75 50,95 15,75 15,25" fill="none" stroke="rgba(255,253,175,0.2)" stroke-width="0.3"/></svg>');
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 85,25 85,75 50,95 15,75 15,25" fill="none" stroke="rgba(255,215,0,0.4)" stroke-width="0.5"/></svg>'),
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 85,25 85,75 50,95 15,75 15,25" fill="none" stroke="rgba(255,165,0,0.3)" stroke-width="0.3"/></svg>');
     background-size: 60px 60px, 30px 30px;
     background-position: 0 0, 15px 15px;
     opacity: 0.4;
@@ -64,10 +64,10 @@ body::before {
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
-    background: rgba(255, 253, 175, 0.3);
+    background: rgba(255, 215, 0, 0.3);
     backdrop-filter: blur(20px);
-    border-bottom: 2px solid rgba(255, 213, 128, 0.6);
-    box-shadow: 0 2px 20px rgba(255, 213, 128, 0.4);
+    border-bottom: 2px solid rgba(255, 165, 0, 0.6);
+    box-shadow: 0 2px 20px rgba(255, 165, 0, 0.4);
     position: relative;
 }
 
@@ -78,7 +78,7 @@ body::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, transparent 30%, rgba(255, 253, 175, 0.3) 50%, transparent 70%);
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 215, 0, 0.3) 50%, transparent 70%);
     pointer-events: none;
 }
 
@@ -97,9 +97,9 @@ body::before {
 }
 
 .dashboard-title i {
-    color: #FFD580;
+    color: #FFD700;
     font-size: 1.8rem;
-    text-shadow: 0 0 15px rgba(255, 213, 128, 0.7);
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
 }
 
 .header-right {
@@ -208,12 +208,12 @@ body::before {
 
 /* Telemetry Panel */
 .telemetry-panel {
-    background: rgba(255, 253, 175, 0.3);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     border-radius: 12px;
     padding: 1.5rem;
-    border: 2px solid rgba(255, 213, 128, 0.5);
-    box-shadow: 0 8px 32px rgba(255, 213, 128, 0.4);
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    box-shadow: 0 8px 32px rgba(255, 215, 0, 0.4);
     position: relative;
     max-height: 80vh;
     overflow-y: auto;
@@ -226,7 +226,7 @@ body::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 85,25 85,75 50,95 15,75 15,25" fill="none" stroke="rgba(255,213,128,0.3)" stroke-width="1"/></svg>');
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 85,25 85,75 50,95 15,75 15,25" fill="none" stroke="rgba(255,215,0,0.3)" stroke-width="1"/></svg>');
     background-size: 40px 40px;
     background-position: 0 0;
     opacity: 0.4;
@@ -238,13 +238,15 @@ body::before {
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
     border-bottom: 2px solid rgba(255, 213, 128, 0.6);
+    background: rgba(255, 255, 255, 1);
 }
 
 .panel-header h3 {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #FFD580;
-    text-shadow: 0 0 12px rgba(255, 213, 128, 0.6);
+    color: #FFD700;
+    text-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+    background: rgba(255, 255, 255, 1);
 }
 
 /* Left Panel Telemetry Grid */
@@ -261,7 +263,7 @@ body::before {
     align-items: center;
     text-align: center;
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 213, 128, 0.6);
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
@@ -283,8 +285,8 @@ body::before {
 .telemetry-value-left {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #FFD580;
-    text-shadow: 0 0 12px rgba(255, 213, 128, 0.6);
+    color: #FFD700;
+    text-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
 }
 
 /* Chart Containers */
@@ -351,11 +353,11 @@ body::before {
 
 /* Widget Styles */
 .widget {
-    background: rgba(255, 253, 175, 0.3);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     border-radius: 12px;
-    border: 2px solid rgba(255, 213, 128, 0.5);
-    box-shadow: 0 8px 32px rgba(255, 213, 128, 0.4);
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    box-shadow: 0 8px 32px rgba(255, 215, 0, 0.4);
     overflow: hidden;
     transition: all 0.3s ease;
     position: relative;
@@ -378,8 +380,8 @@ body::before {
 
 .widget:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(255, 213, 128, 0.6);
-    border-color: #FFD580;
+    box-shadow: 0 12px 40px rgba(139, 69, 19, 0.6);
+    border-color: #8B4513;
 }
 
 .widget-header {
@@ -387,15 +389,16 @@ body::before {
     justify-content: space-between;
     align-items: center;
     padding: 1rem 1.5rem;
-    background: rgba(255, 253, 175, 0.2);
-    border-bottom: 2px solid rgba(255, 213, 128, 0.4);
+    background: rgba(255, 215, 0, 0.2);
+    border-bottom: 2px solid rgba(255, 165, 0, 0.4);
+    flex-shrink: 0;
 }
 
 .widget-header h3 {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #FFD580;
-    text-shadow: 0 0 12px rgba(255, 213, 128, 0.6);
+    color: #FFD700;
+    text-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
 }
 
 .widget-controls {
@@ -422,24 +425,28 @@ body::before {
 /* Chart Widget */
 .chart-widget {
     flex: 2;
-    height: fit-content;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
 }
 
 .chart-container-large {
     position: relative;
-    height: 400px;
+    height: 100%;
     background: rgba(255, 255, 255, 0.8);
     border-radius: 8px;
-    padding: 0.5rem;
+    padding: 0;
+    resize: vertical;
+    overflow: hidden;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
 }
 
 .chart-container-large canvas {
     width: 100% !important;
     height: 100% !important;
-    border-radius: 4px;
+    border-radius: 8px;
+    flex: 1;
 }
 
 /* Propeller Widget */
@@ -449,16 +456,18 @@ body::before {
 }
 
 .propeller-container {
-    padding: 1.5rem;
+    padding: 2rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 1.5rem;
+    gap: 2rem;
+    min-height: 10px;
+    justify-content: space-between;
 }
 
 .propeller-svg {
-    width: 200px;
-    height: 200px;
+    width: 250px;
+    height: 250px;
     filter: drop-shadow(0 0 15px rgba(255, 213, 128, 0.6));
     animation: propellerRotate 2s linear infinite;
 }
@@ -487,31 +496,45 @@ body::before {
 .propeller-info {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    width: 100%;
+    gap: 1.5rem;
+    flex: 1;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 213, 128, 0.3);
+    height: fit-content;
 }
 
 .propeller-stat {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 1rem;
-    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 213, 128, 0.2);
+    transition: all 0.3s ease;
+}
+
+.propeller-stat:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 213, 128, 0.2);
 }
 
 .propeller-label {
-    font-size: 0.9rem;
-    color: #cccccc;
-    font-weight: 500;
+    font-size: 1rem;
+    color: #FFD580;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(255, 213, 128, 0.4);
 }
 
 .propeller-value {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #FFFF00;
-    text-shadow: 0 0 8px rgba(255, 255, 0, 0.6);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #000000;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+    font-family: 'Courier New', monospace;
 }
 
 /* Telemetry Widget */
@@ -552,12 +575,12 @@ body::before {
 
 /* Status Panel */
 .status-panel {
-    background: rgba(255, 253, 175, 0.3);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     border-radius: 12px;
     padding: 1.5rem;
-    border: 2px solid rgba(255, 213, 128, 0.5);
-    box-shadow: 0 8px 32px rgba(255, 213, 128, 0.4);
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    box-shadow: 0 8px 32px rgba(255, 215, 0, 0.4);
     position: relative;
     max-height: 80vh;
     overflow-y: auto;
@@ -826,17 +849,124 @@ body::before {
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(255, 140, 0, 0.2);
+    background: rgba(255, 215, 0, 0.2);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 0, 0.5);
+    background: rgba(255, 165, 0, 0.5);
     border-radius: 4px;
     border: 1px solid rgba(255, 215, 0, 0.4);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 0, 0.7);
-    box-shadow: 0 0 12px rgba(255, 255, 0, 0.4);
+    background: rgba(255, 165, 0, 0.7);
+    box-shadow: 0 0 12px rgba(255, 165, 0, 0.4);
+}
+
+/* Bee-themed decorative elements */
+.dashboard-container::after {
+    content: '🐝';
+    position: fixed;
+    top: 20px;
+    right: 100px;
+    font-size: 2rem;
+    opacity: 0.3;
+    animation: float 3s ease-in-out infinite;
+    z-index: 1;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Output Section */
+.output-section {
+    padding: 1rem 2rem;
+    background: rgba(255, 215, 0, 0.1);
+    border-top: 2px solid rgba(255, 165, 0, 0.3);
+}
+
+.output-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    box-shadow: 0 8px 32px rgba(255, 215, 0, 0.4);
+    overflow: hidden;
+}
+
+.output-header {
+    padding: 1rem 1.5rem;
+    background: rgba(255, 215, 0, 0.2);
+    border-bottom: 2px solid rgba(255, 165, 0, 0.4);
+}
+
+.output-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #FFD700;
+    text-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+    margin: 0;
+}
+
+.output-content {
+    padding: 1rem;
+}
+
+#outputTextarea {
+    width: 100%;
+    height: 120px;
+    padding: 1rem;
+    border: 2px solid rgba(139, 69, 19, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #2F1B14;
+    font-size: 0.9rem;
+    font-family: 'Courier New', monospace;
+    resize: vertical;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#outputTextarea:focus {
+    outline: none;
+    border-color: #8B4513;
+    box-shadow: 0 0 15px rgba(139, 69, 19, 0.4);
+}
+
+#outputTextarea::placeholder {
+    color: #8B4513;
+    font-style: italic;
+}
+
+/* Bottom Right Button */
+.bottom-right-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    border: 2px solid rgba(255, 215, 0, 0.8);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #2F1B14;
+    pointer-events: auto;
+}
+
+.bottom-right-btn:hover {
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+    background: linear-gradient(135deg, #FFA500, #FFD700);
+}
+
+.bottom-right-btn i {
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
 }
