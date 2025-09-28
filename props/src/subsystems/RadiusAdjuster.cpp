@@ -4,8 +4,13 @@ RadiusAdjuster::RadiusAdjuster(uint8_t servoPin)
   : _servoPin(servoPin), _currentPosition(POS_0), _currentState(DISENGAGED) {}
 
 void RadiusAdjuster::begin() {
+    Serial.print("🔗 Attaching servo to pin ");
+    Serial.println(_servoPin);
     _servo.attach(_servoPin);
+    Serial.print("📍 Servo attached, setting initial position...");
     _updateServoPosition();  // Set initial position
+    Serial.println(" Done!");
+    Serial.flush();
 }
 
 void RadiusAdjuster::setState(Position position, State state) {
@@ -66,6 +71,20 @@ const char* RadiusAdjuster::getStateName(State state) {
 // Private methods
 void RadiusAdjuster::_updateServoPosition() {
     int angle = _calculateServoAngle(_currentPosition, _currentState);
+    
+    // Debug output
+    Serial.print("🎯 Setting Servo - Pin ");
+    Serial.print(_servoPin);
+    Serial.print(", Position: ");
+    Serial.print(getPositionName(_currentPosition));
+    Serial.print(" (");
+    Serial.print(_currentPosition);
+    Serial.print("), State: ");
+    Serial.print(getStateName(_currentState));
+    Serial.print(" -> Angle: ");
+    Serial.println(angle);
+    Serial.flush();
+    
     _servo.write(angle);
 }
 

@@ -10,7 +10,7 @@
 #include "PIDController.h"
 
 // Objects
-RPM rpm(DC_MOTOR_RPM_PIN, ANALOG_HALL_PIN, DIGITAL_HALL_PIN);
+RPM rpm(DC_MOTOR_DIR_PIN, DC_MOTOR_PWM_PIN, DIGITAL_HALL_PIN);
 LatchDoor latch(SERVO_LATCH);
 RadiusAdjuster adjuster(SERVO_RADIUS_1);
 PIDController rpmPID(RPM_PID_KP, RPM_PID_KI, RPM_PID_KD);
@@ -30,7 +30,6 @@ bool testRunning = false;
 bool testCompleted = false;
 
 // Hall effect sensor variables
-int lastAnalogHallValue = -1;
 int lastDigitalHallValue = -1;
 bool hallStartedReading = false;
 unsigned long magnetDetections = 0;
@@ -40,39 +39,103 @@ void IRAM_ATTR hallISR() {
 }
 
 void setup() {
+    // Add startup delay and immediate feedback
+    delay(2000);  // Give Serial Monitor time to connect
     Serial.begin(SERIAL_BAUD_RATE);
+    Serial.flush();  // Force immediate output
+    
+    Serial.println("===========================================");
+    Serial.println("🚀 ESP32 SERIAL TEST - CAN YOU SEE THIS?");
+    Serial.println("===========================================");
+    Serial.flush();
+    delay(1000);  // Give time to see this message
+    
+    Serial.println("ESP32 STARTING UP - SYSTEM INITIALIZING...");
+    Serial.println("===========================================");
+    Serial.flush();
 
+    Serial.println("Step 1: Initializing hardware components...");
+    Serial.flush();
+    
     rpm.begin();
+    Serial.println("  - RPM sensor initialized");
+    Serial.flush();
+    
     latch.begin();
+    Serial.println("  - Latch door initialized");
+    Serial.flush();
+    
     adjuster.begin();
+    Serial.println("  - Radius adjuster initialized");
+    Serial.flush();
     
     // Configure PID controller
+    Serial.println("Step 2: Configuring PID controller...");
+    Serial.flush();
+    
     rpmPID.setSetpoint(rpmSetpoint);
     rpmPID.setOutputLimits(RPM_PID_OUTPUT_MIN, RPM_PID_OUTPUT_MAX);
+    Serial.print("  - PID setpoint: ");
+    Serial.println(rpmSetpoint);
+    Serial.flush();
     
     // Setup hall effect sensor pins
-    pinMode(ANALOG_HALL_PIN, INPUT);
+    Serial.println("Step 3: Setting up hall effect sensors...");
     pinMode(DIGITAL_HALL_PIN, INPUT_PULLUP);
+    Serial.print("  - Digital hall pin: ");
+    Serial.println(DIGITAL_HALL_PIN);
     
-    // attachInterrupt(digitalPinToInterrupt(HALL_PIN), hallISR, FALLING);
+    // Enable hall effect interrupt
+    attachInterrupt(digitalPinToInterrupt(DIGITAL_HALL_PIN), hallISR, FALLING);
+    Serial.println("  - Hall interrupt enabled");
+    Serial.flush();  // Force output
 
-    // WiFi setup
+    // WiFi setup with timeout
+    Serial.println("Step 4: Connecting to WiFi...");
+    Serial.print("  - SSID: ");
+    Serial.println(WIFI_SSID);
+    Serial.flush();
+    
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    Serial.print("Connecting to WiFi");
-    while (WiFi.status() != WL_CONNECTED) {
+    Serial.print("  - Connecting");
+    Serial.flush();
+    
+    unsigned long wifiStartTime = millis();
+    const unsigned long WIFI_TIMEOUT = 15000; // 15 second timeout
+    
+    while (WiFi.status() != WL_CONNECTED && (millis() - wifiStartTime) < WIFI_TIMEOUT) {
         delay(500);
         Serial.print(".");
+        Serial.flush();  // Force each dot to appear
     }
-    Serial.println("\nConnected! IP: " + WiFi.localIP().toString());
+    
+    if (WiFi.status() == WL_CONNECTED) {
+        Serial.println("\n  - WiFi Connected! IP: " + WiFi.localIP().toString());
+    } else {
+        Serial.println("\n  - WiFi connection FAILED! Continuing without WiFi...");
+        Serial.println("  - Check your WiFi credentials in Constants.h");
+    }
+    Serial.flush();
 
     // REST endpoint for telemetry
+    Serial.println("Step 5: Starting web server...");
+    Serial.flush();
+    
     server.on("/telemetry", HTTP_GET, []() {
         server.send(200, "application/json", telemetry.getJSON());
     });
     server.begin();
+    Serial.print("  - Web server started on port ");
+    Serial.println(WEB_SERVER_PORT);
+    Serial.flush();
     
     // Start the 5-second test sequence
-    Serial.println("Starting 5-second test sequence...");
+    Serial.println("===========================================");
+    Serial.println("✅ INITIALIZATION COMPLETE!");
+    Serial.println("🚀 Starting 5-second test sequence...");
+    Serial.println("===========================================");
+    Serial.flush();
+    
     testStartTime = millis();
     testRunning = true;
     testCompleted = false;
@@ -81,33 +144,33 @@ void setup() {
 void loop() {
     server.handleClient();
     
+    // Add a heartbeat every 5 seconds when not in test mode
+    // static unsigned long lastHeartbeat = 0;
+    // if (!testRunning && testCompleted && millis() - lastHeartbeat > 5000) {
+    //     Serial.println("System running normally - Heartbeat");
+    //     lastHeartbeat = millis();
+    // }
+    
     // Check hall effect sensor and report when it starts detecting magnets
-    int analogHallValue = analogRead(ANALOG_HALL_PIN);
     int digitalHallValue = digitalRead(DIGITAL_HALL_PIN);
     
     // Check if hall sensor values have changed (indicating magnet detection)
-    if (analogHallValue != lastAnalogHallValue || digitalHallValue != lastDigitalHallValue) {
+    if (digitalHallValue != lastDigitalHallValue) {
         if (!hallStartedReading) {
-            Serial.println("Hall effect sensor started detecting magnetic field!");
+            Serial.println("✓ Hall effect sensor started detecting magnetic field!");
             hallStartedReading = true;
         }
         
-        // Report significant changes in analog reading (threshold to avoid noise)
-        if (abs(analogHallValue - lastAnalogHallValue) > 50) {
-            Serial.print("Hall effect - Analog: ");
-            Serial.print(analogHallValue);
-            Serial.print(", Digital: ");
-            Serial.println(digitalHallValue);
-            
-            // Count magnet detections (when digital goes LOW, assuming active LOW sensor)
-            if (digitalHallValue == LOW && lastDigitalHallValue == HIGH) {
-                magnetDetections++;
-                Serial.print("Magnet detected! Count: ");
-                Serial.println(magnetDetections);
-            }
+        Serial.print("📡 Hall effect - Digital: ");
+        Serial.println(digitalHallValue);
+        
+        // Count magnet detections (when digital goes LOW, assuming active LOW sensor)
+        if (digitalHallValue == LOW && lastDigitalHallValue == HIGH) {
+            magnetDetections++;
+            Serial.print("🧲 Magnet detected! Count: ");
+            Serial.println(magnetDetections);
         }
         
-        lastAnalogHallValue = analogHallValue;
         lastDigitalHallValue = digitalHallValue;
     }
     
@@ -127,18 +190,24 @@ void loop() {
             // Print progress every 500ms
             static unsigned long lastProgressUpdate = 0;
             if (currentTime - lastProgressUpdate >= 500) {
-                Serial.print("Test running... ");
+                Serial.print("🔄 Test running... ");
                 Serial.print(elapsedTime / 1000.0, 1);
-                Serial.print("s elapsed, Motor speed: 150, Servo angle: ");
-                Serial.println(servoAngle);
+                Serial.print("s elapsed, Motor: 150/255, Servo: ");
+                Serial.print(servoAngle);
+                Serial.println("°");
                 lastProgressUpdate = currentTime;
             }
         } else {
             // Test complete - turn everything off
+            Serial.println("⏹️  Stopping motor and servo...");
             rpm.stopMotor();
             adjuster.setAngle(0); // Return servo to 0 position
             
-            Serial.println("5-second test completed! Motor and servo stopped.");
+            Serial.println("===========================================");
+            Serial.println("✅ 5-SECOND TEST COMPLETED SUCCESSFULLY!");
+            Serial.println("Motor and servo stopped.");
+            Serial.println("System now in monitoring mode.");
+            Serial.println("===========================================");
             testRunning = false;
             testCompleted = true;
         }

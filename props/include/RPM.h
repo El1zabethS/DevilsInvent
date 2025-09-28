@@ -5,18 +5,18 @@
 
 class RPM {
   public:
-    RPM(uint8_t dcMotorPin, uint8_t analogHallPin, uint8_t digitalHallPin, uint16_t pulsesPerRev = 1);
+    RPM(uint8_t dcMotorDirPin, uint8_t dcMotorPwmPin, uint8_t digitalHallPin, uint16_t pulsesPerRev = 1);
     void begin();
     void handleInterrupt();
     float getRPM();
     
     // Motor control
-    void setMotorSpeed(float speed);  // 0-255 for analogWrite
+    void setMotorSpeed(float speed);  // 0-255 for PWM speed, always forward direction
     void stopMotor();
 
   private:
-    uint8_t _dcMotorPin;
-    uint8_t _analogHallPin;
+    uint8_t _dcMotorDirPin;   // Direction control pin
+    uint8_t _dcMotorPwmPin;   // PWM speed control pin
     uint8_t _digitalHallPin;
     uint16_t _pulsesPerRev;
     volatile unsigned long _lastPulseTime;

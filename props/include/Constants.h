@@ -8,8 +8,8 @@
 // ========================================
 
 // RPM Sensor and Motor Control Pins
-const uint8_t DC_MOTOR_RPM_PIN = 21;
-const uint8_t ANALOG_HALL_PIN = 05;
+const uint8_t DC_MOTOR_DIR_PIN = 21;  // Motor direction control
+const uint8_t DC_MOTOR_PWM_PIN = 18;  // Motor speed control (PWM)
 const uint8_t DIGITAL_HALL_PIN = 23;
 
 // Servo Control Pins

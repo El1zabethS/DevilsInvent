@@ -1,12 +1,25 @@
 #include "RPM.h"
 
-RPM::RPM(uint8_t dcMotorPin, uint8_t analogHallPin, uint8_t digitalHallPin, uint16_t pulsesPerRev)
-  : _dcMotorPin(dcMotorPin), _analogHallPin(analogHallPin), _digitalHallPin(digitalHallPin), _pulsesPerRev(pulsesPerRev), _lastPulseTime(0), _interval(0) {}
+RPM::RPM(uint8_t dcMotorDirPin, uint8_t dcMotorPwmPin, uint8_t digitalHallPin, uint16_t pulsesPerRev)
+  : _dcMotorDirPin(dcMotorDirPin), _dcMotorPwmPin(dcMotorPwmPin), _digitalHallPin(digitalHallPin), _pulsesPerRev(pulsesPerRev), _lastPulseTime(0), _interval(0) {}
 
 void RPM::begin() {
-    pinMode(_dcMotorPin, OUTPUT);
-    pinMode(_analogHallPin, INPUT);
+    Serial.print("🔌 Setting up motor pins - Dir: ");
+    Serial.print(_dcMotorDirPin);
+    Serial.print(", PWM: ");
+    Serial.println(_dcMotorPwmPin);
+    
+    pinMode(_dcMotorDirPin, OUTPUT);
+    pinMode(_dcMotorPwmPin, OUTPUT);
     pinMode(_digitalHallPin, INPUT_PULLUP);
+    
+    // Set initial motor state (stopped, forward direction)
+    digitalWrite(_dcMotorDirPin, HIGH);  // Forward direction
+    analogWrite(_dcMotorPwmPin, 0);      // Stopped
+    
+    Serial.println("⚡ Motor pins configured, motor stopped in forward direction");
+    Serial.flush();
+    
     attachInterrupt(digitalPinToInterrupt(_digitalHallPin), []{
         // Static lambda needed for ISR
     }, FALLING);
@@ -26,9 +39,23 @@ float RPM::getRPM() {
 void RPM::setMotorSpeed(float speed) {
     // Constrain speed to valid range
     speed = constrain(speed, 0, 255);
-    analogWrite(_dcMotorPin, (int)speed);
+    
+    // Debug output
+    Serial.print("Setting Motor - Dir Pin ");
+    Serial.print(_dcMotorDirPin);
+    Serial.print(" = HIGH, PWM Pin ");
+    Serial.print(_dcMotorPwmPin);
+    Serial.print(" = ");
+    Serial.println((int)speed);
+    
+    // Set direction (always forward for now)
+    digitalWrite(_dcMotorDirPin, HIGH);
+    
+    // Set PWM speed
+    analogWrite(_dcMotorPwmPin, (int)speed);
+    Serial.flush();
 }
 
 void RPM::stopMotor() {
-    analogWrite(_dcMotorPin, 0);
+    analogWrite(_dcMotorPwmPin, 0);
 }
