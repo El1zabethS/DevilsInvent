@@ -11,9 +11,7 @@ class TelemetryTracker {
   public:
     TelemetryTracker(RPM* rpm, LatchDoor* latch, RadiusAdjuster* adjuster, PIDController* pidController = nullptr);
     String getJSON();
-
-    TelemetryTracker(RPM *rpm, LatchDoor *latch, RadiusAdjuster *adjuster);
-
+    
     // Add PID controller reference
     void setPIDController(PIDController* pidController);
 

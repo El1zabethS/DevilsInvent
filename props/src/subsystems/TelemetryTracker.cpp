@@ -1,7 +1,7 @@
 #include "TelemetryTracker.h"
 
-TelemetryTracker::TelemetryTracker(RPM* rpm, LatchDoor* latch, RadiusAdjuster* adjuster)
-  : _rpm(rpm), _latch(latch), _adjuster(adjuster) {}
+TelemetryTracker::TelemetryTracker(RPM* rpm, LatchDoor* latch, RadiusAdjuster* adjuster, PIDController* pidController)
+  : _rpm(rpm), _latch(latch), _adjuster(adjuster), _pidController(pidController) {}
 
 void TelemetryTracker::setPIDController(PIDController* pidController) {
     _pidController = pidController;

@@ -8,14 +8,13 @@
 // ========================================
 
 // RPM Sensor and Motor Control Pins
-const uint8_t DC_MOTOR_RPM_PIN = 34;
-const uint8_t ANALOG_HALL_PIN = 35;
-const uint8_t DIGITAL_HALL_PIN = 36;
+const uint8_t DC_MOTOR_RPM_PIN = 21;
+const uint8_t ANALOG_HALL_PIN = 05;
+const uint8_t DIGITAL_HALL_PIN = 23;
 
 // Servo Control Pins
-const uint8_t SERVO_LATCH = 25;
-const uint8_t SERVO_RADIUS_1 = 26;
-const uint8_t SERVO_RADIUS_2 = 27;
+const uint8_t SERVO_LATCH = 32;
+const uint8_t SERVO_RADIUS_1 = 22;
 
 // ========================================
 // NETWORK CONFIGURATION
