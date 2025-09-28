@@ -1,7 +1,10 @@
 // Honeycomb FRC Dashboard JavaScript
 class HoneycombDashboard {
+    
+    //Constructor of elements for the dashboard
     constructor() {
         this.isConnected = true;
+        
         this.robotData = {
             speed: 0,
             distance: 0,
@@ -9,7 +12,9 @@ class HoneycombDashboard {
             temperature: 25,
             battery: 12.4
         };
+        
         this.charts = {};
+        
         this.chartData = {
             speed: { 
                 labels: [], 
@@ -37,6 +42,7 @@ class HoneycombDashboard {
         this.init();
     }
 
+    //Initializing the dashboard
     init() {
         this.loadSettings();
         this.setupEventListeners();
@@ -50,8 +56,8 @@ class HoneycombDashboard {
         this.connectToESP32();
     }
 
+    //Loading the settings from the localStorage
     loadSettings() {
-        // Load settings from localStorage
         const esp32IP = localStorage.getItem('esp32IP') || '192.168.1.100';
         const esp32Port = parseInt(localStorage.getItem('esp32Port')) || 8080;
         const maxDataPoints = parseInt(localStorage.getItem('maxDataPoints')) || 50;
@@ -61,6 +67,7 @@ class HoneycombDashboard {
         this.maxDataPoints = maxDataPoints;
     }
 
+    //Setting up the event listeners for the dashboard
     setupEventListeners() {
         // Emergency stop button
         document.querySelector('.action-btn.emergency').addEventListener('click', () => {
@@ -95,13 +102,15 @@ class HoneycombDashboard {
         });
     }
 
+    //Initializing the charts for the dashboard
     initializeCharts() {
+        
         // Chart.js configuration with honeycomb theme
         const chartConfig = {
-            responsive: true,
-            maintainAspectRatio: false,
+            responsive: true, //Make the charts responsive
+            maintainAspectRatio: false, //Don't maintain the aspect ratio of height x width of the charts
             plugins: {
-                legend: {
+                legend: { //Legend for the charts
                     labels: {
                         color: '#2F1B14',
                         font: {
@@ -111,7 +120,7 @@ class HoneycombDashboard {
                 }
             },
             scales: {
-                x: {
+                x: { //X-axis for the charts
                     ticks: {
                         color: '#8B4513',
                         font: {
@@ -122,7 +131,7 @@ class HoneycombDashboard {
                         color: 'rgba(255, 140, 0, 0.2)'
                     }
                 },
-                y: {
+                y: { //Y-axis for the charts
                     ticks: {
                         color: '#8B4513',
                         font: {
@@ -156,9 +165,9 @@ class HoneycombDashboard {
                 }]
             },
             options: {
-                ...chartConfig,
+                ...chartConfig, //spread operator to copy the chartConfig
                 plugins: {
-                    ...chartConfig.plugins,
+                    ...chartConfig.plugins, //spread operator to copy the chartConfig.plugins
                     title: {
                         display: false
                     }
@@ -186,39 +195,9 @@ class HoneycombDashboard {
                 }]
             },
             options: {
-                ...chartConfig,
+                ...chartConfig, //spread operator to copy the chartConfig
                 plugins: {
-                    ...chartConfig.plugins,
-                    title: {
-                        display: false
-                    }
-                }
-            }
-        });
-
-        // Battery Chart
-        this.charts.battery = new Chart(document.getElementById('batteryChart'), {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Battery (V)',
-                    data: [],
-                    borderColor: '#32CD32',
-                    backgroundColor: 'rgba(50, 205, 50, 0.2)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#228B22',
-                    pointBorderColor: '#32CD32',
-                    pointBorderWidth: 2,
-                    pointRadius: 4
-                }]
-            },
-            options: {
-                ...chartConfig,
-                plugins: {
-                    ...chartConfig.plugins,
+                    ...chartConfig.plugins, //spread operator to copy the chartConfig.plugins
                     title: {
                         display: false
                     }
@@ -261,8 +240,8 @@ class HoneycombDashboard {
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, //Make the charts responsive
+                maintainAspectRatio: false, //Don't maintain the aspect ratio of height x width of the charts
                 plugins: {
                     legend: {
                         labels: {
@@ -274,7 +253,7 @@ class HoneycombDashboard {
                     }
                 },
                 scales: {
-                    x: {
+                    x: { //X-axis for the charts
                         ticks: {
                             color: '#8B4513',
                             font: {
@@ -285,7 +264,7 @@ class HoneycombDashboard {
                             color: 'rgba(255, 140, 0, 0.2)'
                         }
                     },
-                    y: {
+                    y: { //Y-axis for the charts
                         ticks: {
                             color: '#8B4513',
                             font: {
@@ -313,12 +292,13 @@ class HoneycombDashboard {
             const time = new Date(Date.now() - (20 - i) * 1000);
             timeLabels.push(time.toLocaleTimeString());
             
-            // Generate realistic measured values with some variance
+            // Generate random realistic measured values with some variance
             const baseValue = Math.sin(i * 0.3) * 50 + 100;
             measuredData.push(baseValue + (Math.random() - 0.5) * 10);
             expectedData.push(baseValue);
         }
         
+        //List will always follow the pattern: measuredData, expectedData, measuredData, expectedData, ...
         this.charts.dataComparison.data.labels = timeLabels;
         this.charts.dataComparison.data.datasets[0].data = measuredData;
         this.charts.dataComparison.data.datasets[1].data = expectedData;
@@ -345,6 +325,7 @@ class HoneycombDashboard {
         }
         
         // Add new data point
+        //List will always follow the pattern: measuredData, expectedData, measuredData, expectedData, ...
         this.charts.dataComparison.data.labels.push(timeLabel);
         this.charts.dataComparison.data.datasets[0].data.push(measuredValue);
         this.charts.dataComparison.data.datasets[1].data.push(expectedValue);
@@ -365,7 +346,7 @@ class HoneycombDashboard {
         // Update propeller values periodically
         setInterval(() => {
             this.updatePropellerValues();
-        }, 2000);
+        }, 2000 /*2 seconds*/);
     }
 
     
@@ -373,12 +354,15 @@ class HoneycombDashboard {
         // Use real ESP32 data if available, otherwise simulate
         let rpm, thrust, status;
         
+        //If the realTimeData is not undefined, then use the real ESP32 data
         if (this.realTimeData && this.realTimeData.propeller_rpm !== undefined) {
+            
             // Use real ESP32 data
             rpm = this.realTimeData.propeller_rpm;
             thrust = this.realTimeData.propeller_thrust;
             status = this.realTimeData.status;
         } else {
+            
             // Simulate varying propeller data
             rpm = 1000 + Math.random() * 500;
             thrust = 70 + Math.random() * 30;
@@ -390,10 +374,43 @@ class HoneycombDashboard {
         document.getElementById('propellerThrust').textContent = Math.round(thrust) + '%';
         document.getElementById('propellerStatus').textContent = status;
         
-        // Adjust animation speed based on RPM
+        // Calculate animation duration for one full rotation based on RPM
+        // Formula: 60 seconds / RPM = seconds per rotation
         const propellerSvg = document.querySelector('.propeller-svg');
         const animationDuration = Math.max(0.5, 3 - (rpm - 1000) / 1000);
         propellerSvg.style.animationDuration = animationDuration + 's';
+        
+        // Track rotation count and add visual feedback
+        this.updatePropellerRotation(rpm, animationDuration);
+    }
+
+    updatePropellerRotation(rpm, duration) {
+        // Track rotation count
+        if (!this.propellerRotationCount) {
+            this.propellerRotationCount = 0;
+        }
+        
+        // Increment rotation count
+        this.propellerRotationCount++;
+        
+        // Log every 10 rotations for debugging
+        if (this.propellerRotationCount % 10 === 0) {
+            console.log(`Propeller completed ${this.propellerRotationCount} rotations at ${rpm} RPM`);
+        }
+        
+        // Add visual feedback for completed rotations
+        this.addRotationFeedback();
+    }
+
+    addRotationFeedback() {
+        // Add a subtle visual effect when rotation completes
+        const propellerSvg = document.querySelector('.propeller-svg');
+        propellerSvg.style.filter = 'drop-shadow(0 0 20px rgba(255, 213, 128, 0.8))';
+        
+        // Reset the glow effect after a short delay
+        setTimeout(() => {
+            propellerSvg.style.filter = 'drop-shadow(0 0 15px rgba(255, 213, 128, 0.6))';
+        }, 100);
     }
 
     // Connect to ESP32 WebSocket
@@ -405,6 +422,8 @@ class HoneycombDashboard {
         
         this.websocket = new WebSocket(wsUrl);
         
+        //Attempting to connect to the ESP32 WebSocket
+        //If the ESP32 WebSocket is connected, then update the ESP32 button status to true
         this.websocket.onopen = (event) => {
             console.log('Connected to ESP32 WebSocket');
             this.esp32Connected = true;
@@ -412,6 +431,7 @@ class HoneycombDashboard {
             this.addLogEntry('Connected to ESP32', 'success');
         };
         
+        //If the ESP32 WebSocket is connected, then update the realTimeData
         this.websocket.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
@@ -422,6 +442,7 @@ class HoneycombDashboard {
             }
         };
         
+        //If the ESP32 WebSocket is disconnected, then update the ESP32 button status to false
         this.websocket.onclose = (event) => {
             console.log('ESP32 WebSocket disconnected');
             this.esp32Connected = false;
@@ -434,9 +455,10 @@ class HoneycombDashboard {
                 if (!this.esp32Connected) {
                     this.connectToESP32();
                 }
-            }, 3000);
+            }, 3000 /*  */);
         };
         
+        //If the ESP32 WebSocket is error, then log the error
         this.websocket.onerror = (error) => {
             console.error('ESP32 WebSocket error:', error);
             this.addLogEntry('ESP32 connection error', 'error');
@@ -469,6 +491,7 @@ class HoneycombDashboard {
         }
     }
 
+    //Setting up the chart controls for the dashboard
     setupChartControls() {
         // Chart control buttons
         const chartControls = {
@@ -481,13 +504,13 @@ class HoneycombDashboard {
             const pauseBtn = document.getElementById(chartControls[chartName].pause);
             const resetBtn = document.getElementById(chartControls[chartName].reset);
 
-            if (pauseBtn) {
+            if (pauseBtn) { //If the pause button is found, then add an event listener to it
                 pauseBtn.addEventListener('click', () => {
                     this.toggleChartPause(chartName, pauseBtn);
                 });
             }
 
-            if (resetBtn) {
+            if (resetBtn) { //If the reset button is found, then add an event listener to it
                 resetBtn.addEventListener('click', () => {
                     this.resetChart(chartName);
                 });
@@ -495,10 +518,12 @@ class HoneycombDashboard {
         });
     }
 
+    //Setting up the widget controls for the dashboard
     setupWidgetControls() {
+        
         // Chart fullscreen
         const chartFullscreenBtn = document.querySelector('.chart-widget .widget-btn[title="Fullscreen"]');
-        if (chartFullscreenBtn) {
+        if (chartFullscreenBtn) { //If the chart fullscreen button is found, then add an event listener to it
             chartFullscreenBtn.addEventListener('click', () => {
                 this.toggleChartFullscreen();
             });
@@ -506,16 +531,18 @@ class HoneycombDashboard {
 
         // Propeller refresh
         const propellerRefreshBtn = document.querySelector('.propeller-widget .widget-btn[title="Refresh"]');
-        if (propellerRefreshBtn) {
+        if (propellerRefreshBtn) { //If the propeller refresh button is found, then add an event listener to it
             propellerRefreshBtn.addEventListener('click', () => {
                 this.refreshPropeller();
             });
         }
     }
 
+    //Updating the charts for the dashboard
     updateCharts() {
-        const now = new Date();
-        const timeLabel = now.toLocaleTimeString();
+
+        const now = new Date(); //Instantiating and declearing a time in date format
+        const timeLabel = now.toLocaleTimeString(); //Getting the current time in string format
 
         // Update Speed Chart
         this.updateChartData('speed', timeLabel, this.robotData.speed);
@@ -527,6 +554,7 @@ class HoneycombDashboard {
         this.updateChartData('battery', timeLabel, this.robotData.battery);
     }
 
+    //Updating the chart data for the dashboard
     updateChartData(chartName, label, value) {
         const chart = this.charts[chartName];
         if (!chart) return;
@@ -545,8 +573,11 @@ class HoneycombDashboard {
         chart.update('none');
     }
 
+    //Toggling the chart pause for the dashboard
     toggleChartPause(chartName, button) {
         const icon = button.querySelector('i');
+
+        //If the icon contains the class fa-pause, then remove the class fa-pause and add the class fa-play
         if (icon.classList.contains('fa-pause')) {
             icon.classList.remove('fa-pause');
             icon.classList.add('fa-play');
@@ -558,6 +589,7 @@ class HoneycombDashboard {
         }
     }
 
+    //Resetting the chart for the dashboard
     resetChart(chartName) {
         const chart = this.charts[chartName];
         if (!chart) return;
@@ -567,6 +599,7 @@ class HoneycombDashboard {
         chart.update();
     }
 
+    //Starting the data simulation for the dashboard
     startDataSimulation() {
         setInterval(() => {
             if (this.isConnected) {
@@ -614,34 +647,51 @@ class HoneycombDashboard {
         
         // Update status based on robot conditions
         let status = 'Active';
-        if (this.robotData.temperature > 70) status = 'High Temp';
-        else if (this.robotData.battery < 11.0) status = 'Low Battery';
-        else if (!this.isConnected) status = 'Disconnected';
-        
+        if (this.robotData.temperature > 70) 
+            {
+            status = 'High Temp';
+            }
+        else if (this.robotData.battery < 11.0) 
+            {
+                status = 'Low Battery';
+            }
+        else if (!this.isConnected) 
+            {
+                status = 'Disconnected';
+            }
         document.getElementById('statusValueLeft').textContent = status;
     }
 
+    //Updating the battery display for the dashboard
     updateBatteryDisplay() {
         const batteryElement = document.querySelector('.battery-level span');
         batteryElement.textContent = `${this.robotData.battery.toFixed(1)}V`;
         
         // Update battery icon based on voltage
         const batteryIcon = document.querySelector('.battery-level i');
-        if (this.robotData.battery > 12.0) {
+        if (this.robotData.battery > 12.0) 
+        {
             batteryIcon.className = 'fas fa-battery-three-quarters';
-        } else if (this.robotData.battery > 11.0) {
+        } 
+        else if (this.robotData.battery > 11.0) 
+        {
             batteryIcon.className = 'fas fa-battery-half';
-        } else if (this.robotData.battery > 10.0) {
+        } 
+        else if (this.robotData.battery > 10.0) 
+        {
             batteryIcon.className = 'fas fa-battery-quarter';
-        } else {
+        } 
+        else 
+        {
             batteryIcon.className = 'fas fa-battery-empty';
         }
     }
 
+    //Updating the clock for the dashboard
     updateClock() {
         const updateTime = () => {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString();
+            const now = new Date(); //Instantiating and declaring a time in date format
+            const timeString = now.toLocaleTimeString(); //Getting the current time in string format
             document.getElementById('currentTime').textContent = timeString;
         };
         
@@ -649,25 +699,30 @@ class HoneycombDashboard {
         setInterval(updateTime, 1000);
     }
 
+    //Sending the emergency stop command to the ESP32
     emergencyStop() {
         this.sendESP32Command('emergency_stop');
         this.addLogEntry('Emergency stop activated', 'error');
     }
 
+    //Sending the restart command to the ESP32
     restartRobot() {
         this.sendESP32Command('restart');
         this.addLogEntry('Restarting robot...', 'warning');
     }
 
+    //Sending the calibrate command to the ESP32
     calibrateRobot() {
         this.sendESP32Command('calibrate');
         this.addLogEntry('Starting calibration...', 'info');
     }
 
+    //Updating the connection status for the dashboard
     updateConnectionStatus(connected) {
         const statusIndicator = document.querySelector('.status-indicator');
         const statusText = document.querySelector('.connection-status span');
         
+        //If the connected is true, then update the connection status to connected
         if (connected) {
             statusIndicator.className = 'fas fa-circle status-indicator connected';
             statusText.textContent = 'Connected';
@@ -677,49 +732,59 @@ class HoneycombDashboard {
         }
     }
 
+    //Adding the log entry to the dashboard
     addLogEntry(message, type = 'info') {
         const logContainer = document.querySelector('.event-log');
         const logEntry = document.createElement('div');
-        logEntry.className = `log-entry ${type}`;
+        logEntry.className = `log-entry ${type}`; //Adding the class log-entry and the type to the log entry
         
         const now = new Date();
         const timeString = now.toLocaleTimeString();
         
+        //Log entry will always follow the pattern: time, message
         logEntry.innerHTML = `
             <span class="log-time">${timeString}</span>
             <span class="log-message">${message}</span>
         `;
         
+        //Adding the log entry to the log container
         logContainer.insertBefore(logEntry, logContainer.firstChild);
         
         // Keep only last 10 entries
+        //If the log container has more than 10 entries, then remove the last entry
         while (logContainer.children.length > 10) {
             logContainer.removeChild(logContainer.lastChild);
         }
     }
 
+    //Toggling the chart fullscreen for the dashboard
     toggleChartFullscreen() {
         const chartWidget = document.querySelector('.chart-widget');
         
+        //If the document fullscreen element is not found, then request the fullscreen for the chart widget
         if (!document.fullscreenElement) {
             chartWidget.requestFullscreen().catch(err => {
                 console.log('Error attempting to enable fullscreen:', err);
             });
+            //If the error is thrown, then log the error
         } else {
             document.exitFullscreen();
         }
     }
 
+    //Refreshing the propeller values for the dashboard
     refreshPropeller() {
         this.updatePropellerValues();
         this.addLogEntry('Propeller data refreshed', 'info');
     }
 
+    //Refreshing the telemetry values for the dashboard
     refreshTelemetry() {
         this.addLogEntry('Telemetry data refreshed', 'info');
         this.updateTelemetryDisplay();
     }
 
+    //Opening the settings modal for the dashboard
     openSettings() {
         // Create a simple settings modal
         const modal = document.createElement('div');
@@ -849,8 +914,9 @@ class HoneycombDashboard {
             document.head.removeChild(style);
         });
         
+        //If the modal is clicked, then remove the modal and the style
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
+            if (e.target === modal) { //If the target is the modal, then remove the modal and the style
                 document.body.removeChild(modal);
                 document.head.removeChild(style);
             }
@@ -870,6 +936,7 @@ class HoneycombDashboard {
             localStorage.setItem('esp32Port', esp32Port);
             localStorage.setItem('maxDataPoints', maxDataPoints);
             
+            //Adding the log entry to the dashboard
             this.addLogEntry('Settings saved', 'success');
             document.body.removeChild(modal);
             document.head.removeChild(style);
@@ -877,22 +944,25 @@ class HoneycombDashboard {
 
         // Cancel functionality
         modal.querySelector('.btn-secondary').addEventListener('click', () => {
+            //Removing the modal and the style
             document.body.removeChild(modal);
             document.head.removeChild(style);
         });
     }
 
+    //Toggling the ESP32 connection for the dashboard
     toggleESP32Connection() {
         const button = document.getElementById('esp32ConnectBtn');
         const icon = button.querySelector('i');
         const text = button.querySelector('span');
 
+        //If the ESP32 is not connected, then connect to the ESP32
         if (!this.esp32Connected) {
             // Connect to ESP32
             this.esp32Handler = new ESP32DataHandler(this);
             this.esp32Handler.connect(this.esp32IP, this.esp32Port);
             
-            // Update button appearance
+            //Updating the button appearance
             button.classList.add('connected');
             icon.className = 'fas fa-wifi';
             text.textContent = 'Connecting...';
@@ -900,6 +970,7 @@ class HoneycombDashboard {
             this.esp32Connected = true;
             this.addLogEntry('Attempting to connect to ESP32...', 'info');
         } else {
+            
             // Disconnect from ESP32
             if (this.esp32Handler) {
                 this.esp32Handler.disconnect();
@@ -911,42 +982,55 @@ class HoneycombDashboard {
             icon.className = 'fas fa-wifi';
             text.textContent = 'Connect ESP32';
             
+            //Updating the ESP32 connection status
             this.esp32Connected = false;
             this.addLogEntry('Disconnected from ESP32', 'warning');
         }
     }
 
+    //Updating the ESP32 button status for the dashboard
     updateESP32ButtonStatus(connected) {
         const button = document.getElementById('esp32ConnectBtn');
         const icon = button.querySelector('i');
         const text = button.querySelector('span');
 
-        if (connected) {
+        if (connected) 
+        { //If the ESP32 is connected, then update the ESP32 button status to connected
             button.classList.add('connected');
             icon.className = 'fas fa-wifi';
             text.textContent = 'ESP32 Connected';
-        } else {
+        } 
+        else 
+        {
             button.classList.remove('connected');
             icon.className = 'fas fa-wifi';
             text.textContent = 'Connect ESP32';
         }
     }
 
+    //Handling the widget control for the dashboard
     handleWidgetControl(button) {
         const title = button.getAttribute('title');
         const widget = button.closest('.widget');
         
         switch (title) {
+            //If the title is Fullscreen, then toggle the chart fullscreen
             case 'Fullscreen':
                 if (widget.classList.contains('chart-widget')) {
                     this.toggleChartFullscreen();
-                } else {
+                } 
+                else 
+                {
                     this.toggleCameraFullscreen();
                 }
                 break;
+            
+            //If the title is Settings, then open the settings modal
             case 'Settings':
                 this.openSettings();
                 break;
+            
+            //If the title is Refresh, then refresh the propeller or telemetry
             case 'Refresh':
                 if (widget.classList.contains('propeller-widget')) {
                     this.refreshPropeller();
@@ -972,10 +1056,12 @@ class ESP32DataHandler {
         this.maxReconnectAttempts = 5;
     }
 
+    //Connecting to the ESP32
     connect(esp32IP = '192.168.1.100', port = 8080) {
         try {
             this.websocket = new WebSocket(`ws://${esp32IP}:${port}/telemetry`);
             
+            //If the ESP32 WebSocket is opened, then add the log entry to the dashboard
             this.websocket.onopen = () => {
                 console.log('Connected to ESP32');
                 this.dashboard.addLogEntry('ESP32 connected', 'success');
@@ -983,6 +1069,7 @@ class ESP32DataHandler {
                 this.reconnectAttempts = 0;
             };
 
+            //If the ESP32 WebSocket is message, then process the ESP32 data
             this.websocket.onmessage = (event) => {
                 try {
                     const data = JSON.parse(event.data);
@@ -992,6 +1079,7 @@ class ESP32DataHandler {
                 }
             };
 
+            //If the ESP32 WebSocket is closed, then add the log entry to the dashboard
             this.websocket.onclose = () => {
                 console.log('ESP32 connection closed');
                 this.dashboard.addLogEntry('ESP32 disconnected', 'warning');
@@ -999,6 +1087,7 @@ class ESP32DataHandler {
                 this.attemptReconnect();
             };
 
+            //If the ESP32 WebSocket is error, then add the log entry to the dashboard
             this.websocket.onerror = (error) => {
                 console.error('ESP32 WebSocket error:', error);
                 this.dashboard.addLogEntry('ESP32 connection error', 'error');
@@ -1010,7 +1099,7 @@ class ESP32DataHandler {
     }
 
     processESP32Data(data) {
-        // Update robot data with ESP32 telemetry
+        // Update robot data with ESP32 telemetry if speed, temperature, battery, distance, and angle are not undefined
         if (data.speed !== undefined) {
             this.dashboard.robotData.speed = data.speed;
         }
@@ -1033,8 +1122,9 @@ class ESP32DataHandler {
         this.dashboard.updateCharts();
     }
 
+    //Attempting to reconnect to the ESP32
     attemptReconnect() {
-        if (this.reconnectAttempts < this.maxReconnectAttempts) {
+        if (this.reconnectAttempts < this.maxReconnectAttempts) { //If the reconnect attempts are less than the max reconnect attempts, then reconnect to the ESP32
             this.reconnectAttempts++;
             setTimeout(() => {
                 console.log(`Attempting to reconnect to ESP32 (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
@@ -1043,17 +1133,22 @@ class ESP32DataHandler {
         }
     }
 
+    //Disconnecting from the ESP32
     disconnect() {
+        //If the websocket is not null, then close the websocket
         if (this.websocket) {
             this.websocket.close();
             this.websocket = null;
         }
     }
 
+    //Sending the command to the ESP32
     sendCommand(command) {
+        //If the websocket is not null and the websocket is open, then send the command to the ESP32
         if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
             this.websocket.send(JSON.stringify(command));
         } else {
+            //If the websocket is null or the websocket is not open, then log the error
             console.warn('ESP32 not connected, cannot send command');
         }
     }
@@ -1066,6 +1161,7 @@ function formatTime(seconds) {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
 
+//Generating the random data for the dashboard
 function generateRandomData() {
     return {
         speed: Math.random() * 5,
