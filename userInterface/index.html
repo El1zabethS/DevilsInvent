@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Honeycomb Devils Invent 2025 User Interface</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1 class="dashboard-title">
+                    <i class="fas fa-honey-pot"></i>
+                    Honeycomb Devils Invent 2025
+                </h1>
+            </div>
+            <div class="header-right">
+                <div class="connection-status">
+                    <i class="fas fa-circle status-indicator connected"></i>
+                    <span>Connected</span>
+                </div>
+                <div class="battery-level">
+                    <i class="fas fa-bee"></i>
+                    <span>12.4V</span>
+                </div>
+                <button class="esp32-btn" id="esp32ConnectBtn">
+                    <i class="fas fa-wifi"></i>
+                    <span>Connect ESP32</span>
+                </button>
+                <button class="settings-btn">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Grid -->
+        <main class="dashboard-main">
+            
+            <!-- Left Panel - Robot Telemetry -->
+            <aside class="telemetry-panel">
+                <div class="panel-header">
+                    <h3>Robot Telemetry</h3>
+                </div>
+                
+                <!-- Telemetry Data Grid -->
+                <div class="telemetry-grid-left">
+                    <div class="telemetry-item-left">
+                        <span class="telemetry-label-left">Speed</span>
+                        <span class="telemetry-value-left" id="speedValueLeft">0.0 m/s</span>
+                    </div>
+                    <div class="telemetry-item-left">
+                        <span class="telemetry-label-left">Distance</span>
+                        <span class="telemetry-value-left" id="distanceValueLeft">0.0 m</span>
+                    </div>
+                    <div class="telemetry-item-left">
+                        <span class="telemetry-label-left">Angle</span>
+                        <span class="telemetry-value-left" id="angleValueLeft">0°</span>
+                    </div>
+                    <div class="telemetry-item-left">
+                        <span class="telemetry-label-left">Temperature</span>
+                        <span class="telemetry-value-left" id="tempValueLeft">25°C</span>
+                    </div>
+                    <div class="telemetry-item-left">
+                        <span class="telemetry-label-left">Battery</span>
+                        <span class="telemetry-value-left" id="batteryValueLeft">12.4V</span>
+                    </div>
+                    <div class="telemetry-item-left">
+                        <span class="telemetry-label-left">Status</span>
+                        <span class="telemetry-value-left" id="statusValueLeft">Active</span>
+                    </div>
+                </div>
+
+                <!-- Additional Telemetry Charts -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h4>Speed Over Time</h4>
+                        <div class="chart-controls">
+                            <button class="chart-btn" id="speedPauseBtn">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                            <button class="chart-btn" id="speedResetBtn">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <canvas id="speedChart" width="400" height="150"></canvas>
+                </div>
+
+                <!-- Temperature Chart -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h4>Temperature Monitoring</h4>
+                        <div class="chart-controls">
+                            <button class="chart-btn" id="tempPauseBtn">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                            <button class="chart-btn" id="tempResetBtn">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <canvas id="temperatureChart" width="400" height="150"></canvas>
+                </div>
+            </aside>
+
+            <!-- Center Panel - Main Content -->
+            <section class="main-content">
+                
+                <!-- Data Comparison Chart -->
+                <div class="widget chart-widget" data-widget="chart">
+                    <div class="widget-header">
+                        <h3>Measured vs Expected Data</h3>
+                        <div class="widget-controls">
+                            <button class="widget-btn" title="Fullscreen">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                            <button class="widget-btn" title="Settings">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container-large">
+                        <canvas id="dataComparisonChart" width="600" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Propeller Display -->
+                <div class="widget propeller-widget" data-widget="propeller">
+                    <div class="widget-header">
+                        <h3>Propeller Status</h3>
+                        <div class="widget-controls">
+                            <button class="widget-btn" title="Refresh">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="propeller-container">
+                        <svg class="propeller-svg" viewBox="0 0 300 300">
+                            <!-- Main Circular Plate -->
+                            <circle cx="150" cy="150" r="120" fill="#E0E0E0" stroke="#B0B0B0" stroke-width="2"/>
+                            
+                            <!-- Central Hub with Key-like Structure -->
+                            <g class="central-hub">
+                                <!-- Square base -->
+                                <rect x="140" y="140" width="20" height="20" fill="#C0C0C0" stroke="#A0A0A0" stroke-width="1"/>
+                                <!-- Key protrusions -->
+                                <rect x="135" y="145" width="10" height="10" fill="#C0C0C0" stroke="#A0A0A0" stroke-width="1"/>
+                                <rect x="155" y="145" width="10" height="10" fill="#C0C0C0" stroke="#A0A0A0" stroke-width="1"/>
+                                <!-- Center hole -->
+                                <circle cx="150" cy="150" r="3" fill="#000000"/>
+                            </g>
+                            
+                            <!-- Radial Spokes (4 spokes in cross pattern) -->
+                            <g class="radial-spokes">
+                                <rect x="145" y="30" width="10" height="240" fill="#D0D0D0" stroke="#B0B0B0" stroke-width="1" transform="rotate(0 150 150)"/>
+                                <rect x="145" y="30" width="10" height="240" fill="#D0D0D0" stroke="#B0B0B0" stroke-width="1" transform="rotate(90 150 150)"/>
+                                <rect x="145" y="30" width="10" height="240" fill="#D0D0D0" stroke="#B0B0B0" stroke-width="1" transform="rotate(180 150 150)"/>
+                                <rect x="145" y="30" width="10" height="240" fill="#D0D0D0" stroke="#B0B0B0" stroke-width="1" transform="rotate(270 150 150)"/>
+                            </g>
+                            
+                            <!-- 16 Segmented Blades -->
+                            <g class="propeller-blades">
+                                <!-- Generate 16 blades around the circumference -->
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(0 150 150)"/>
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(22.5 150 150)"/>
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(45 150 150)"/>
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(67.5 150 150)"/>
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(90 150 150)"/>
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(112.5 150 150)"/>
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(135 150 150)"/>
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(157.5 150 150)"/>
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(180 150 150)"/>
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(202.5 150 150)"/>
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(225 150 150)"/>
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(247.5 150 150)"/>
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(270 150 150)"/>
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(292.5 150 150)"/>
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(315 150 150)"/>
+                                <rect x="140" y="30" width="20" height="25" fill="#FFD580" stroke="#FFA500" stroke-width="1" transform="rotate(337.5 150 150)"/>
+                            </g>
+                            
+                            <!-- Status Indicators -->
+                            <circle cx="150" cy="150" r="2" fill="#000000"/>
+                        </svg>
+                        
+                        <!-- Propeller Info -->
+                        <div class="propeller-info">
+                            <div class="propeller-stat">
+                                <span class="propeller-label">RPM</span>
+                                <span class="propeller-value" id="propellerRPM">1250</span>
+                            </div>
+                            <div class="propeller-stat">
+                                <span class="propeller-label">Thrust</span>
+                                <span class="propeller-value" id="propellerThrust">85%</span>
+                            </div>
+                            <div class="propeller-stat">
+                                <span class="propeller-label">Status</span>
+                                <span class="propeller-value" id="propellerStatus">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel - Status & Logs -->
+            <aside class="status-panel">
+                <div class="panel-header">
+                    <h3>System Status</h3>
+                </div>
+
+                <!-- System Health -->
+                <div class="status-group">
+                    <h4>System Health</h4>
+                    <div class="health-indicators">
+                        <div class="health-item">
+                            <i class="fas fa-honeycomb"></i>
+                            <span>CPU</span>
+                            <div class="health-bar">
+                                <div class="health-fill" style="width: 45%"></div>
+                            </div>
+                            <span class="health-value">45%</span>
+                        </div>
+                        <div class="health-item">
+                            <i class="fas fa-hive"></i>
+                            <span>RAM</span>
+                            <div class="health-bar">
+                                <div class="health-fill" style="width: 32%"></div>
+                            </div>
+                            <span class="health-value">32%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Log -->
+                <div class="status-group">
+                    <h4>Event Log</h4>
+                    <div class="event-log">
+                        <div class="log-entry info">
+                            <span class="log-time">14:32:15</span>
+                            <span class="log-message">Robot initialized successfully</span>
+                        </div>
+                        <div class="log-entry warning">
+                            <span class="log-time">14:32:10</span>
+                            <span class="log-message">Low battery warning</span>
+                        </div>
+                        <div class="log-entry success">
+                            <span class="log-time">14:31:45</span>
+                            <span class="log-message">Connection established</span>
+                        </div>
+                        <div class="log-entry error">
+                            <span class="log-time">14:31:30</span>
+                            <span class="log-message">Camera initialization failed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="status-group">
+                    <h4>Quick Actions</h4>
+                    <div class="quick-actions">
+                        <button class="action-btn emergency">
+                            <i class="fas fa-stop"></i>
+                            Emergency Stop
+                        </button>
+                        <button class="action-btn restart">
+                            <i class="fas fa-redo"></i>
+                            Restart Robot
+                        </button>
+                        <button class="action-btn calibrate">
+                            <i class="fas fa-honey-pot"></i>
+                            Calibrate
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Output Textbox Section -->
+        <section class="output-section">
+            <div class="output-container">
+                <div class="output-header">
+                    <h3>AI Detection and Analysis</h3>
+                </div>
+                <div class="output-content">
+                    <textarea id="outputTextarea" placeholder="System output will appear here..."></textarea>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Bottom Right Button -->
+    <button class="bottom-right-btn" id="bottomRightBtn" title="AI Assistant">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
